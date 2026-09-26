@@ -25,9 +25,11 @@ const btnZoomIn = document.getElementById('btn-zoom-in');
 const btnZoomOut = document.getElementById('btn-zoom-out');
 const btnResetView = document.getElementById('btn-reset-view');
 const btnDownload = document.getElementById('btn-download');
+const btnThemeToggle = document.getElementById('btn-theme-toggle');
 
 /* ============ State ============ */
 let currentType = 'tree';
+let currentTheme = 'dark';
 let viewBox = { x: 0, y: 0, w: 800, h: 600 };
 let isPanning = false;
 let panStart = { x: 0, y: 0 };
@@ -260,8 +262,9 @@ btnDownload.addEventListener('click', () => {
     canvas.width = img.width * scale;
     canvas.height = img.height * scale;
 
-    // Dark background
-    ctx.fillStyle = '#0a0a0f';
+    // Theme-aware background
+    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim();
+    ctx.fillStyle = bgColor || '#0B1120';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.scale(scale, scale);
     ctx.drawImage(img, 0, 0);
@@ -327,6 +330,35 @@ svg.addEventListener('mouseleave', () => {
   if (tooltip) tooltip.classList.remove('visible');
 });
 
+/* ============ Theme Toggle ============ */
+function getPreferredTheme() {
+  const stored = localStorage.getItem('leetvis-theme');
+  if (stored === 'light' || stored === 'dark') return stored;
+  // Detect OS preference
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+    return 'light';
+  }
+  return 'dark';
+}
+
+function setTheme(theme) {
+  currentTheme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('leetvis-theme', theme);
+}
+
+btnThemeToggle.addEventListener('click', () => {
+  setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+});
+
+// Listen for OS theme changes
+window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+  if (!localStorage.getItem('leetvis-theme')) {
+    setTheme(e.matches ? 'light' : 'dark');
+  }
+});
+
 /* ============ Init ============ */
+setTheme(getPreferredTheme());
 setType('tree');
 renderExamples();
