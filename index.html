@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LeetVis — Visualize LeetCode Data Structures</title>
+    <meta name="description" content="Paste LeetCode-style array inputs and instantly visualize them as trees, graphs, linked lists, and grids. Free, no backend, runs entirely in your browser." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- Header -->
+      <header id="header">
+        <div class="header-left">
+          <div class="logo" id="logo">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+              <rect x="2" y="2" width="24" height="24" rx="6" fill="url(#logoGrad)" />
+              <circle cx="10" cy="10" r="2.5" fill="#fff" />
+              <circle cx="18" cy="10" r="2.5" fill="#fff" />
+              <circle cx="14" cy="18" r="2.5" fill="#fff" />
+              <line x1="10" y1="10" x2="18" y2="10" stroke="#fff" stroke-width="1.5" opacity="0.6" />
+              <line x1="10" y1="10" x2="14" y2="18" stroke="#fff" stroke-width="1.5" opacity="0.6" />
+              <line x1="18" y1="10" x2="14" y2="18" stroke="#fff" stroke-width="1.5" opacity="0.6" />
+              <defs>
+                <linearGradient id="logoGrad" x1="2" y1="2" x2="26" y2="26">
+                  <stop stop-color="#6366f1" />
+                  <stop offset="1" stop-color="#a855f7" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="logo-text">LeetVis</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <a href="https://github.com/Nachi2006/LeetVis" target="_blank" rel="noopener" class="github-link" id="github-link" title="View on GitHub">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Layout -->
+      <main id="main">
+        <!-- Input Panel -->
+        <aside id="input-panel" class="panel">
+          <div class="panel-header">
+            <h2>Input</h2>
+            <div class="type-selector" id="type-selector">
+              <button class="type-btn active" data-type="tree" id="btn-tree">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="8" cy="3" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="4" cy="11" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="12" cy="11" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="8" y1="5" x2="4" y2="9" stroke="currentColor" stroke-width="1.2" />
+                  <line x1="8" y1="5" x2="12" y2="9" stroke="currentColor" stroke-width="1.2" />
+                </svg>
+                Tree
+              </button>
+              <button class="type-btn" data-type="graph" id="btn-graph">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="3" cy="8" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="13" cy="4" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="13" cy="12" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="5" y1="8" x2="11" y2="4" stroke="currentColor" stroke-width="1.2" />
+                  <line x1="5" y1="8" x2="11" y2="12" stroke="currentColor" stroke-width="1.2" />
+                  <line x1="13" y1="6" x2="13" y2="10" stroke="currentColor" stroke-width="1.2" />
+                </svg>
+                Graph
+              </button>
+              <button class="type-btn" data-type="linkedlist" id="btn-linkedlist">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="3" cy="8" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <circle cx="13" cy="8" r="2" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="5" y1="8" x2="6" y2="8" stroke="currentColor" stroke-width="1.2" />
+                  <line x1="10" y1="8" x2="11" y2="8" stroke="currentColor" stroke-width="1.2" />
+                </svg>
+                List
+              </button>
+              <button class="type-btn" data-type="matrix" id="btn-matrix">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <rect x="1" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2" />
+                  <rect x="8" y="1" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2" />
+                  <rect x="1" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2" />
+                  <rect x="8" y="8" width="5" height="5" rx="1" stroke="currentColor" stroke-width="1.2" />
+                </svg>
+                Matrix
+              </button>
+            </div>
+          </div>
+
+          <div class="input-area">
+            <label for="data-input" class="input-label">
+              <span id="input-hint">Paste LeetCode array (e.g. [1,2,3,null,null,4,5])</span>
+            </label>
+            <textarea id="data-input" class="code-input" spellcheck="false" placeholder="[1,2,3,null,null,4,5]"></textarea>
+          </div>
+
+          <div class="actions">
+            <button id="btn-visualize" class="btn-primary">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <polygon points="5,3 13,8 5,13" fill="currentColor" />
+              </svg>
+              Visualize
+            </button>
+            <button id="btn-clear" class="btn-secondary">Clear</button>
+          </div>
+
+          <!-- Examples -->
+          <div class="examples-section">
+            <h3>Examples</h3>
+            <div id="examples-list" class="examples-list"></div>
+          </div>
+        </aside>
+
+        <!-- Visualization Canvas -->
+        <section id="canvas-panel" class="panel canvas-panel">
+          <div class="canvas-toolbar" id="canvas-toolbar">
+            <div class="toolbar-left">
+              <span class="structure-badge" id="structure-badge">Binary Tree</span>
+            </div>
+            <div class="toolbar-right">
+              <button class="tool-btn" id="btn-zoom-in" title="Zoom In">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="5" y1="7" x2="9" y2="7" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="7" y1="5" x2="7" y2="9" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
+              <button class="tool-btn" id="btn-zoom-out" title="Zoom Out">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.5" />
+                  <line x1="5" y1="7" x2="9" y2="7" stroke="currentColor" stroke-width="1.5" />
+                </svg>
+              </button>
+              <button class="tool-btn" id="btn-reset-view" title="Reset View">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 8a6 6 0 0 1 10.5-4" stroke="currentColor" stroke-width="1.5" fill="none" />
+                  <polygon points="13,2 14,5.5 10.5,4.5" fill="currentColor" />
+                  <path d="M14 8a6 6 0 0 1-10.5 4" stroke="currentColor" stroke-width="1.5" fill="none" />
+                  <polygon points="3,14 2,10.5 5.5,11.5" fill="currentColor" />
+                </svg>
+              </button>
+              <div class="toolbar-divider"></div>
+              <button class="tool-btn" id="btn-download" title="Download as PNG">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 2v8M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M2 12v2h12v-2" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="canvas-container" class="canvas-container">
+            <svg id="vis-svg" class="vis-svg"></svg>
+            <!-- Empty state -->
+            <div id="empty-state" class="empty-state">
+              <div class="empty-icon">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                  <circle cx="32" cy="16" r="6" stroke="url(#emptyGrad)" stroke-width="2" opacity="0.5" />
+                  <circle cx="18" cy="40" r="6" stroke="url(#emptyGrad)" stroke-width="2" opacity="0.4" />
+                  <circle cx="46" cy="40" r="6" stroke="url(#emptyGrad)" stroke-width="2" opacity="0.4" />
+                  <circle cx="32" cy="56" r="4" stroke="url(#emptyGrad)" stroke-width="2" opacity="0.3" />
+                  <line x1="32" y1="22" x2="18" y2="34" stroke="url(#emptyGrad)" stroke-width="1.5" opacity="0.3" />
+                  <line x1="32" y1="22" x2="46" y2="34" stroke="url(#emptyGrad)" stroke-width="1.5" opacity="0.3" />
+                  <line x1="18" y1="46" x2="32" y2="52" stroke="url(#emptyGrad)" stroke-width="1.5" opacity="0.2" />
+                  <defs>
+                    <linearGradient id="emptyGrad" x1="0" y1="0" x2="64" y2="64">
+                      <stop stop-color="#6366f1" />
+                      <stop offset="1" stop-color="#a855f7" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <h3>Paste & Visualize</h3>
+              <p>Enter a LeetCode-style input on the left and hit <kbd>Visualize</kbd> to see the magic.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
