@@ -343,6 +343,9 @@ export function renderMatrix(svg, data) {
     svg.appendChild(t);
   }
 
+  // Determine if matrix is binary (only 0s and 1s) — only then use color highlighting
+  const isBinary = cells.every(c => c.val === 0 || c.val === 1 || c.val === true || c.val === false);
+
   // Cells
   cells.forEach((cell, i) => {
     const g = el('g', {
@@ -353,10 +356,10 @@ export function renderMatrix(svg, data) {
       'data-val': cell.val,
     });
 
-    const isHighlight = cell.val === 1 || cell.val === true;
+    const shouldHighlight = isBinary && (cell.val === 1 || cell.val === true);
 
     const rect = el('rect', {
-      class: `matrix-cell${isHighlight ? ' cell-highlight' : ''}`,
+      class: `matrix-cell${shouldHighlight ? ' cell-highlight' : ''}`,
       x: cell.x,
       y: cell.y,
       width: cellSize,
