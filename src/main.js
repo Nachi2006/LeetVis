@@ -244,12 +244,75 @@ window.addEventListener('mouseup', () => {
 });
 
 /* ============ Download as PNG ============ */
+
+/**
+ * Inline all computed styles onto a cloned SVG so it renders
+ * identically when detached from the page stylesheet.
+ */
+function inlineStyles(sourceEl, clonedEl) {
+  const computed = getComputedStyle(sourceEl);
+  // Key SVG-relevant properties to inline
+  const props = [
+    'fill', 'stroke', 'stroke-width', 'stroke-dasharray', 'stroke-linecap',
+    'stroke-linejoin', 'opacity', 'font-family', 'font-size', 'font-weight',
+    'text-anchor', 'dominant-baseline', 'filter', 'color', 'rx', 'ry',
+  ];
+  let styleStr = '';
+  for (const prop of props) {
+    const val = computed.getPropertyValue(prop);
+    if (val) {
+      styleStr += `${prop}:${val};`;
+    }
+  }
+  // Preserve existing inline styles (like animation delay) and append computed ones
+  const existing = clonedEl.getAttribute('style') || '';
+  clonedEl.setAttribute('style', existing + styleStr);
+
+  // Recurse into children
+  const srcChildren = sourceEl.children;
+  const cloneChildren = clonedEl.children;
+  for (let i = 0; i < srcChildren.length; i++) {
+    if (cloneChildren[i]) {
+      inlineStyles(srcChildren[i], cloneChildren[i]);
+    }
+  }
+}
+
 btnDownload.addEventListener('click', () => {
-  const svgData = new XMLSerializer().serializeToString(svg);
+  // Clone the live SVG so we don't mutate the original
+  const cloned = svg.cloneNode(true);
 
-  // Inject styles inline for the export
-  const styleEl = document.querySelector('style') || document.createElement('style');
+  // Inline all computed styles from the live SVG onto the clone
+  inlineStyles(svg, cloned);
 
+  // Remove animations so all elements are visible in the export
+  cloned.querySelectorAll('*').forEach(el => {
+    el.style.animation = 'none';
+    el.style.opacity = '1';
+  });
+
+  // Read the current viewBox
+  const vb = svg.getAttribute('viewBox');
+  if (vb) cloned.setAttribute('viewBox', vb);
+
+  // Get dimensions from viewBox for canvas sizing
+  const parts = (vb || '0 0 800 600').split(' ').map(Number);
+  const svgW = parts[2];
+  const svgH = parts[3];
+  cloned.setAttribute('width', svgW);
+  cloned.setAttribute('height', svgH);
+
+  // Insert a background rect as the first child
+  const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim() || '#0B1120';
+  const NS = 'http://www.w3.org/2000/svg';
+  const bgRect = document.createElementNS(NS, 'rect');
+  bgRect.setAttribute('width', '100%');
+  bgRect.setAttribute('height', '100%');
+  bgRect.setAttribute('fill', bgColor);
+  cloned.insertBefore(bgRect, cloned.firstChild);
+
+  // Serialize and export
+  const svgData = new XMLSerializer().serializeToString(cloned);
   const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
 
@@ -259,15 +322,10 @@ btnDownload.addEventListener('click', () => {
 
   img.onload = () => {
     const scale = 2; // High DPI
-    canvas.width = img.width * scale;
-    canvas.height = img.height * scale;
-
-    // Theme-aware background
-    const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-primary').trim();
-    ctx.fillStyle = bgColor || '#0B1120';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    canvas.width = svgW * scale;
+    canvas.height = svgH * scale;
     ctx.scale(scale, scale);
-    ctx.drawImage(img, 0, 0);
+    ctx.drawImage(img, 0, 0, svgW, svgH);
 
     const pngUrl = canvas.toDataURL('image/png');
     const a = document.createElement('a');
